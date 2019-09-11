@@ -1,0 +1,14 @@
+{
+    "require": {
+        "twig/twig": "^2.11",
+        "mailgun/mailgun-php": "^2.8",
+        "guzzlehttp/psr7": "^1.5",
+        "php-http/guzzle6-adapter": "1.1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Core\\": "Core/",
+            "App\\": "App/"
+        }
+    }
+}

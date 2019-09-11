@@ -1,0 +1,5 @@
+# ignore all files in 'logs' folder
+logs/
+
+# ignore Config.php to prevent auth code exposure
+App/Config.php
