@@ -19,6 +19,8 @@ Features Registration:
 
 UI Features: 
 - Bootstrap 4
+- Flashmassages
+- 404 and 500 Page
 
 Installation:
 - Rename ConfigCommit.php to Config.php and fill in the credentials

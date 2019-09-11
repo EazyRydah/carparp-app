@@ -2,7 +2,8 @@
 
 namespace App;
 
-use Mailgun\Mailgun;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 use App\Config;
 
 /**
@@ -24,15 +25,52 @@ class Mail
       */
     public static function send($to, $subject, $text, $html)
     {
-        $mg = new Mailgun(Config::MAILGUN_API_KEY);
-        $domain = Config::MAILGUN_DOMAIN;
 
-        // Now, compose and send your message.
-        $mg->sendMessage($domain, array(
-                                    'from'      => 'your-sender@example.com',
-                                    'to'        => $to,
-                                    'subject'   => $subject,
-                                    'text'      => $text,
-                                    'html'      => $html));
+        $mail = new PHPMailer(true);
+
+        try {
+        
+          // Server settings
+          $mail->isSMTP();
+          $mail->Host = 's157.goserver.host';
+          $mail->SMTPAuth = true;
+          $mail->Username = 'web53p2';
+          $mail->Password = 'l1NPDZMfQ6jq37th';
+          $mail->SMTPSecure = 'tls';
+          $mail->Port = 587;
+        
+          // Recipients
+          $mail->setFrom("info@carparkapp.com", "Carpark Info");
+          $mail->addAddress("fabian.rhoda@stud.hawk.de"); 
+
+          // Content
+          $mail->isHTML(true); // Set email format to HTML
+          $mail->Subject = $subject;
+          $mail->Body =  $html;
+          $mail->AltBody = $text;
+          // HTML aktivieren
+         
+          
+          // Empfänger Adresse und Alias hinzufügen
+          
+          
+          // Betreff
+          
+          // Nachtrichteninhalt als HTML
+          
+
+          // Alternativer Nachrichteninhalt für Clients, die kein HTML darstellen
+          // $mail->AltBody = strip_tags($mail->$text);
+
+          if ($mail->send()) {
+            return true;
+          }
+
+      } catch (Exception $e) {
+       
+          return $mail->ErrorInfo;
+
+      }
+        
     }
 }
