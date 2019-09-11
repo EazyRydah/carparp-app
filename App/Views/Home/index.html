@@ -8,6 +8,8 @@
     
     {% if current_user %}
         Hello {{ current_user.name }}.
+        <br>
+        <a href="/parking/new">Add Parking</a>
     {% else %}
         <a href="/signup/new">Sign up</a> or <a href="/login">log in</a>.
     {% endif %}

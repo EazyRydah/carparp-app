@@ -8,7 +8,7 @@ use \App\Mail;
 use \Core\View;
 
 /**
- * Example user model
+ * User model
  * 
  * PHP version 7.3.6
   */
