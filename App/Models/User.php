@@ -359,7 +359,7 @@ class User extends \Core\Model
         return false;
     }
 
-       /**
+    /**
      * Send an email to the user containing the activation link
      * 
      * @return void

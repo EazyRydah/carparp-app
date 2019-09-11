@@ -32,35 +32,22 @@ class Mail
         
           // Server settings
           $mail->isSMTP();
-          $mail->Host = 's157.goserver.host';
+          $mail->Host = Config::MAIL_SMTP_HOST;
           $mail->SMTPAuth = true;
-          $mail->Username = 'web53p2';
-          $mail->Password = 'l1NPDZMfQ6jq37th';
-          $mail->SMTPSecure = 'tls';
+          $mail->Username = 'web53p1';
+          $mail->Password = 'ahd9Aegh';
+          $mail->SMTPSecure = Config::MAIL_SECURE_PROTOCOL;
           $mail->Port = 587;
         
           // Recipients
           $mail->setFrom("info@carparkapp.com", "Carpark Info");
-          $mail->addAddress("fabian.rhoda@stud.hawk.de"); 
+          $mail->addAddress($to); 
 
           // Content
           $mail->isHTML(true); // Set email format to HTML
           $mail->Subject = $subject;
           $mail->Body =  $html;
           $mail->AltBody = $text;
-          // HTML aktivieren
-         
-          
-          // Empfänger Adresse und Alias hinzufügen
-          
-          
-          // Betreff
-          
-          // Nachtrichteninhalt als HTML
-          
-
-          // Alternativer Nachrichteninhalt für Clients, die kein HTML darstellen
-          // $mail->AltBody = strip_tags($mail->$text);
 
           if ($mail->send()) {
             return true;
