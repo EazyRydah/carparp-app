@@ -6,20 +6,28 @@
 
     <h1>Parking</h1>
 
+    {% if parking.errors is not empty %}
+        <p>Errors:</p>
+        <ul>
+            {% for error in parking.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
     <p>Add new parking to your account</p>
     
     <form action="/parking/create" method="POST">
         <div class="form-group">
             <label for="inputContractID">contract_id</label>
-            <input type="text" id="inputContractID" name="contract_id" placeholder="Enter valid contract ID here" autofocus value="" class="form-control"/>
+            <input type="number" id="inputContractID" name="contract_id" placeholder="Enter valid contract ID here" autofocus  value="{{ parking.contract_id }}" class="form-control"/>
         </div>
         <div class="form-group">
             <label for="inputKeyID">key_id</label>
-            <input type="text" id="inputKeyID" name="key_id" placeholder="Enter Key ID here" class="form-control"/>
+            <input type="number" id="inputKeyID" name="key_id" placeholder="Enter Key ID here" value="{{ parking.key_id }}" class="form-control"/>
         </div>
         <button type="submit" class="btn btn-default">Add</button>
         <a href="/">Cancel</a>
     </form>
  
-
 {% endblock %}

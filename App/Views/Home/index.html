@@ -10,6 +10,15 @@
         Hello {{ current_user.name }}.
         <br>
         <a href="/parking/new">Add Parking</a>
+        
+        {% for parking in user_parkings %}
+            <ul>
+                <li>{{ parking.carpark_name }} | {{ parking.street }} {{ parking.street_number }}, {{ parking.zip_code }} {{ parking.city }} | Shared: {{ parking.is_shared }} | <a href="#">Share</a></li>
+            </ul>
+        {% else %}
+            <p>Bislang keine Parkplätze vorhanden.</p>
+        {% endfor %}
+        
     {% else %}
         <a href="/signup/new">Sign up</a> or <a href="/login">log in</a>.
     {% endif %}

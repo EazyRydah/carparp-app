@@ -45,17 +45,31 @@ class Parking extends Authenticated
     public function createAction() 
     {
 
-        $parking = Parkings::authenticate($_POST['contract_id'], $_POST['key_id']);
+        $parking = new Parkings($_POST);
 
-        if ($parking) {
+        if ($parking->add()) {
 
             Flash::addMessage('Parking added successfully');
 
             $this->redirect('/');
 
-        } 
+        } else {
 
+            View::renderTemplate('Parking/new.html', [
+                'parking' => $parking
+            ]);
 
+        }
+    }
+
+    /**
+     * Get all parkings related to current logged-in user
+     * 
+     * @return mixed The collection of parking objects or null if nothing found
+      */
+    public static function getParkings()
+    {
+        return Parkings::findByID($_SESSION['user_id']);
     }
 
 }

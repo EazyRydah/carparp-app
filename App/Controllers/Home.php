@@ -18,8 +18,8 @@ class Home extends \Core\Controller
       */
     protected function before() 
     {
-        // echo "(before) ";
-        // return false;
+      // echo "(before) ";
+      // return false;
     }
 
     /**
@@ -29,7 +29,7 @@ class Home extends \Core\Controller
       */
     protected function after()
     {
-        //echo " (after)";
+      //echo " (after)";
     }
 
     /**
@@ -40,7 +40,9 @@ class Home extends \Core\Controller
     public function indexAction()
     {
       
-        View::renderTemplate('Home/index.html');
+      // Get all parkings where user is current user_id
+
+      View::renderTemplate('Home/index.html');
 
     }
 }
