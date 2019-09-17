@@ -19,7 +19,7 @@ Features Registration:
 
 UI Features: 
 - Bootstrap 4
-- Flashmassages
+- Flashmessages
 - 404 and 500 Page
 
 Installation:
