@@ -2,7 +2,7 @@ Custom PHP MVC Framework
 
 Features MVC:
 - MVC architecture
-- Advanced routing wiht pretty URLs
+- Advanced routing engine with pretty URLs
 - Classes with namespaces and composer psr-4 autoload
 - Controller with action filter
 - Views in pure html with twig template engine
@@ -19,7 +19,7 @@ Features Registration:
 
 UI Features: 
 - Bootstrap 4
-- Flashmassages
+- Flashmessages
 - 404 and 500 Page
 
 Installation:
