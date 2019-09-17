@@ -2,18 +2,43 @@
 
 {% block title %}Log in{% endblock %}
 
+{% block footer %}
+    
+    <script>
+
+        $(document).ready(function() {
+             /**
+            Validate the form            
+              */
+            $('#formLogin').validate({
+                rules: {
+                    email: {
+                        required: true,
+                        email: true
+                    },
+                    password: {
+                        required: true
+                    }
+                }
+            });
+        });
+
+    </script>
+
+{% endblock %}
+
 {% block body %}
 
     <h1>Log in</h1>
     
-    <form action="/login/create" method="POST">
+    <form action="/login/create" method="POST" id="formLogin">
         <div class="form-group">
             <label for="inputEmail">Email address</label>
             <input type="email" id="inputEmail" name="email" placeholder="Email address" autofocus value="{{ email }}" class="form-control"/>
         </div>
         <div class="form-group">
             <label for="inputPassword">Password</label>
-            <input type="password" id="inputPassword" name="password" placeholder="Password" class="form-control"/>
+            <input type="password" id="inputPassword" name="password" placeholder="Password" class="form-control" autocomplete="new-password"/>
         </div>
         <div class="checkbox">
             <label>

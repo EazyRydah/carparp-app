@@ -20,6 +20,9 @@ class Parkings extends \Core\Model
      */
     public $errors = [];
 
+    public $contract_id;
+    public $key_id;
+
     /**
      * Class constructor
      * 
@@ -67,7 +70,7 @@ class Parkings extends \Core\Model
 
             } else {
 
-                $this->errors[] = 'Kombination existiert nicht du Bauer!';
+                return false;
 
             }
 
@@ -150,11 +153,34 @@ class Parkings extends \Core\Model
     * 
     * @param string $id The user ID
     * 
-    * @return mixed User object collection if found, false otherwise
+    * @return mixed Parking object collection if found, false otherwise
+     */
+    public static function findByUserID($id)
+    {
+        $sql = 'SELECT * FROM parkings WHERE user_id = :id';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+
+        // get namespace dynamically with get_called_class()
+        $stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+        $stmt->execute();
+
+        return $stmt->fetchAll();  // fetch() only gets first element
+    }
+
+    /**
+    * Find ID related parking via primary key
+    * 
+    * @param string $id The parking ID
+    * 
+    * @return mixed Parking object collection if found, false otherwise
      */
     public static function findByID($id)
     {
-        $sql = 'SELECT * FROM parkings WHERE user_id = :id';
+        $sql = 'SELECT * FROM parkings WHERE id = :id';
 
         $db = static::getDB();
         $stmt = $db->prepare($sql);
@@ -165,7 +191,7 @@ class Parkings extends \Core\Model
 
         $stmt->execute();
 
-        return $stmt->fetchAll();  // fetch() only gets first element
+        return $stmt->fetch();  
     }
  
 }

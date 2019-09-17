@@ -12,9 +12,25 @@
         <a href="/parking/new">Add Parking</a>
         
         {% for parking in user_parkings %}
-            <ul>
-                <li>{{ parking.carpark_name }} | {{ parking.street }} {{ parking.street_number }}, {{ parking.zip_code }} {{ parking.city }} | Shared: {{ parking.is_shared }} | <a href="#">Share</a></li>
-            </ul>
+
+            <hr>
+            
+            <dl class="row mt-3">
+                <dt class="col-sm-2">Adresse: </dt>
+                <dd class="col-sm-4">{{ parking.carpark_name }}  </dd>
+                <dt class="col-sm-2">Status: </dt>
+                <dd class="col-sm-4">{{ parking.is_shared }} </dd>
+                <dt class="col-sm-2">Straße: </dt>
+                <dd class="col-sm-4">{{ parking.street }} {{ parking.street_number }}, {{ parking.zip_code }} {{ parking.city }} </dd>
+                <dt class="col-sm-2">Funktionen: </dt>
+                <dd class="col-sm-2">
+                    <a href="parking/{{ parking.id }}/share">Freigeben</a>
+                    </dd>
+                <dd class="col-sm-2">
+                    <a href="#">Verlauf</a>
+                </dd>
+            </dl>
+           
         {% else %}
             <p>Bislang keine Parkplätze vorhanden.</p>
         {% endfor %}

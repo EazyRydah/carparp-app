@@ -55,6 +55,8 @@ class Parking extends Authenticated
 
         } else {
 
+            Flash::addMessage('Combination not found, please try again', Flash::WARNING);
+
             View::renderTemplate('Parking/new.html', [
                 'parking' => $parking
             ]);
@@ -68,8 +70,29 @@ class Parking extends Authenticated
      * @return mixed The collection of parking objects or null if nothing found
       */
     public static function getParkings()
-    {
-        return Parkings::findByID($_SESSION['user_id']);
+    {   
+        if (Auth::getUser()) {
+
+            return Parkings::findByUserID($_SESSION['user_id']);
+
+        }
+       
     }
+
+    /**
+     * Share selected parking with id comming from the query string
+     *
+     * @return void
+     */
+    public function shareAction() 
+    {
+        $parking = Parkings::findByID($this->route_params['id']);
+
+        View::renderTemplate('Parking/share.html', [
+            'parking' => $parking
+        ]);
+    }
+
+    
 
 }

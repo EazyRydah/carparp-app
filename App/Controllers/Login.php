@@ -21,7 +21,9 @@ class Login extends \Core\Controller
       */
     public function newAction() 
     {
-        View::renderTemplate('Login/new.html');
+      
+      View::renderTemplate('Login/new.html');
+             
     }
 
     /**
@@ -31,28 +33,30 @@ class Login extends \Core\Controller
       */
     public function createAction() 
     {
-       $user = User::authenticate($_POST['email'], $_POST['password']);
+    
+        $user = User::authenticate($_POST['email'], $_POST['password']);
 
-       $remember_me = isset($_POST['remember_me']);
+        $remember_me = isset($_POST['remember_me']);
 
-       if ($user) {
+        if ($user) {
             
-            Auth::login($user, $remember_me);
+          Auth::login($user, $remember_me);
 
-            Flash::addMessage('Login successful');
+          Flash::addMessage('Login successful');
 
-            $this->redirect(Auth::getReturnToPage());
+          $this->redirect(Auth::getReturnToPage());
 
-       } else {
+        } else {
 
-            Flash::addMessage('Login unsuccessful, please try again', Flash::WARNING);
+          Flash::addMessage('Login unsuccessful, please try again', Flash::WARNING);
 
-            View::renderTemplate('Login/new.html', [
-                'email' => $_POST['email'],
-                'remember_me' => $remember_me
-            ]);
+          View::renderTemplate('Login/new.html', [
+              'email' => $_POST['email'],
+              'remember_me' => $remember_me
+          ]);
 
-       }
+        }
+
     }
 
     /**

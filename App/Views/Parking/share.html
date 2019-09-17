@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Parking{% endblock %}
+
+{% block body %}
+
+    <h1>Share Parking</h1>
+
+    <p>{{ parking.carpark_name }}, {{ parking.street }} {{ parking.street_number }}, {{ parking.zip_code }} {{ parking.city }} | Status: {{ parking.is_shared }} </p>
+    
+    <form action="#" method="POST" id="formShareParking">
+
+        <div class="form-group">
+            <label for="inputContractID">share_start</label>
+            <input type="number" id="inputContractID" name="contract_id" placeholder="Select share start date" autofocus  class="form-control"/>
+        </div>
+
+        <div class="form-group">
+            <label for="inputKeyID">share_end</label>
+            <input type="number" id="inputKeyID" name="key_id" placeholder="Select share end date" class="form-control"/>
+        </div>
+
+        <button type="submit" class="btn btn-default">Share</button>
+        <a href="/">Cancel</a>
+    </form>
+ 
+{% endblock %}
