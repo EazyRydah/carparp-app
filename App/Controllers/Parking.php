@@ -19,7 +19,8 @@ class Parking extends Authenticated
     /**
      * Before filter - called before each action method
      * 
-     * @return void */  
+     * @return void
+    */  
     protected function before() 
     {
         parent::before();
@@ -31,7 +32,7 @@ class Parking extends Authenticated
      * Show the add parking page
      * 
      * @return void
-      */
+    */
     public function newAction() 
     {
         View::renderTemplate('Parking/new.html');
@@ -68,7 +69,7 @@ class Parking extends Authenticated
      * Get all parkings related to current logged-in user
      * 
      * @return mixed The collection of parking objects or null if nothing found
-      */
+    */
     public static function getParkings()
     {   
         if (Auth::getUser()) {
@@ -83,7 +84,7 @@ class Parking extends Authenticated
      * Share selected parking with id comming from the query string
      *
      * @return void
-     */
+    */
     public function shareAction() 
     {
         $parking = Parkings::findByID($this->route_params['id']);
@@ -92,7 +93,5 @@ class Parking extends Authenticated
             'parking' => $parking
         ]);
     }
-
-    
 
 }

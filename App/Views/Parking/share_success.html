@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Share Parking{% endblock %}
+
+{% block body %}
+
+    <h1>Parking shares successfully</h1>
+
+    <p>
+        <a href="/">Back to All Parkings</a>
+    </p>
+    <p>
+        <a href="/parking/{{ parking.id }}/share">Add another Share</a>
+    </p>
+
+
+{% endblock %}
