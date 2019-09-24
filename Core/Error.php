@@ -38,9 +38,11 @@ class Error
     {
         // Code is 404 (not found) or 500 (general error)
         $code = $exception->getCode();
+        
         if ($code != 404) {
             $code = 500;
         }
+
         http_response_code($code);
 
         if (\App\Config::SHOW_ERRORS) {

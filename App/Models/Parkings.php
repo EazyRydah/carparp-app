@@ -20,7 +20,17 @@ class Parkings extends \Core\Model
      */
     public $errors = [];
 
+    /**
+    * ID of parking related contract
+    * 
+    * @var int
+     */
     public $contract_id;
+
+    /**
+     * ID of parking related key
+     * 
+     * @var int */  
     public $key_id;
 
     /**

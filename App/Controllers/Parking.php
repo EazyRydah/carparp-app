@@ -7,6 +7,7 @@ use \App\Auth;
 use \App\Flash;
 use \App\Models\User;
 use \App\Models\Parkings;
+use \App\Models\Shares;
 
 /* 
 * Parking Controller
@@ -92,6 +93,45 @@ class Parking extends Authenticated
         View::renderTemplate('Parking/share.html', [
             'parking' => $parking
         ]);
+    }
+
+     /**
+     * Create share on seletected parking with parking id commiing from the 
+     * query string. 
+     *
+     * @return void
+    */
+    public function shareCreateAction() 
+    {
+        $parking = Parkings::findByID($this->route_params['id']);
+
+        $share = new Shares($_POST);
+
+        if ($share->add($parking->id)) {
+
+            // 
+
+            Flash::addMessage('Parking shared successfully');
+
+
+            // TODO redirect to share_success
+            View::renderTemplate('Parking/share.html', [
+                'parking' => $parking,
+                'share' => $share
+            ]); 
+
+        } else {
+            
+            Flash::addMessage('invalid date input, please try again', Flash::WARNING);
+
+            View::renderTemplate('Parking/share.html', [
+                'parking' => $parking,
+                'share' => $share
+            ]); 
+
+        }
+
+        // var_dump($share);
     }
 
 }
