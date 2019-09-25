@@ -54,11 +54,13 @@ class Shares extends \Core\Model
     /**
      * Add the share model with the current property values
      * 
+     * @param string $id The parking ID
+     * 
      * @return void
       */
-      public function add($parkingID) {
+      public function add($id) {
 
-        $this->validate();
+        $this->validate($id);
 
         if (empty($this->errors)) {
             
@@ -74,9 +76,11 @@ class Shares extends \Core\Model
     /**
     * Validate current property values, adding validation error messages to the errors array property. 
     * 
+    * @param string $id The parking ID
+    * 
     * @return void
     */
-    protected function validate()
+    private function validate($id)
     {
 
         // SHARE START DATE VALIDATION
@@ -145,18 +149,106 @@ class Shares extends \Core\Model
         // CHECK FOR EXISTING SHAREPERIOD IN DATABASE
         if(empty($this->errors)) {
 
-            // built dateperiod 
-            $begin = new DateTime($this->share_start);
-            $end = new DateTime($this->share_end);
-            $interval = new DateInterval('P1D');
-            $daterange = new DatePeriod( $begin, $interval, $end);
+            $existingShares = $this->getByParkingID($id);
 
-            foreach ($daterange as $date) {
-                echo $date->format(DateTime::ISO8601) . "<br>";
+            if ($existingShares) {
+                
+                $existingShareDates = $this->getDatesFromExistingShares($existingShares);
+
+                // TOOOODOOOO
+
             }
-
-            // TODOOO CHECK IF ANY SHARE IN DB HAVE DATE FROM THIS PERIOD
         }
+    }
+
+    private function getDatesFromExistingShares($shares)
+    {
+        // var_dump($shares);
+
+        $sharePeriods = [];
+
+        foreach ($shares as $share) {
+            $sharePeriods[] = $this->createDatePeriod(
+                                     $share->share_start, $share->share_end);
+        }
+
+        // var_dump($sharePeriods);
+
+        $sharePeriodDates = [];
+
+        foreach ($sharePeriods as $sharePeriod) {
+          
+            $sharePeriodDates[] = $this->getDatesFromDatePeriod($sharePeriod);
+            
+        }
+        
+       var_dump($sharePeriodDates);
+
+       // TOODOOOO RETURN ONE ARRAY WITH ALL DATES INSIDE INSTEAD OF X ARRAYS...
+        
+    }
+
+    /**
+    * Create an DatePeriod object from given start and end dates 
+    * With ISO8601 matching interval declaration P1D (Period1Day)
+    * 
+    * @param string $start The start date
+    * @param string $end The end date
+    * 
+    * @return DatePeriod object
+    */
+    private function createDatePeriod($start, $end) 
+    {
+        $start = new DateTime($start);
+        $end = new DateTime($end);
+        $end = $end->modify('+1 day');
+        $interval = new DateInterval('P1D');
+        $dateperiod = new DatePeriod($start, $interval, $end);
+
+        return $dateperiod;
+    }
+
+    /**
+    * Get Dates from DatePeriod object in ISO8601 format
+    * 
+    * @param DatePeriod $dateperiod The Dateperiod object
+    * 
+    * @return array $dates ISO8601 formatted dates as strings
+    */
+    private function getDatesFromDatePeriod($dateperiod) {
+
+        $dates = [];
+
+        foreach ($dateperiod as $date) {
+
+            $dates[] = $date->format(DateTime::ISO8601);
+
+        }
+
+        return $dates;
+    }
+
+    /**
+    * Find all parking ID related shares
+    * 
+    * @param string $id The parking ID
+    * 
+    * @return mixed Share object collection if found, false otherwise
+     */
+    private function getByParkingID($id) {
+
+        $sql = 'SELECT * FROM shares WHERE parking_id = :id';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+
+        // get namespace dynamically with get_called_class()
+        $stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+        $stmt->execute();
+
+        return $stmt->fetchAll();  // fetch() only gets first element
     }
 }
     

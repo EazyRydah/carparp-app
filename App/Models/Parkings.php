@@ -62,8 +62,6 @@ class Parkings extends \Core\Model
                 
                 $user = Auth::getUser();
 
-                var_dump($user->id);
-
                 $sql = 'UPDATE parkings 
                         SET user_id = :user_id
                         WHERE contract_id = :contract_id 
