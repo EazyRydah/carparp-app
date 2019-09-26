@@ -64,7 +64,22 @@ class Shares extends \Core\Model
 
         if (empty($this->errors)) {
             
-            return true;
+            var_dump($this);
+
+
+            $sql = 'INSERT INTO shares (share_start, share_end, parking_id) 
+                    VALUES (:share_start, :share_end, :parking_id)';
+            
+            $db = static::getDB();
+            $stmt = $db->prepare($sql);
+    
+            $stmt->bindValue(':share_start', $this->share_start, PDO::PARAM_STR);
+            $stmt->bindValue(':share_end', $this->share_end, PDO::PARAM_STR);
+            $stmt->bindValue(':parking_id', $id, PDO::PARAM_INT);
+    
+            return $stmt->execute(); // returns true on success
+
+            // TOOODOOOOO UPDATE EXISTING SHARE! compare periods THING ABOUT THIS ONE!
 
         } else {
 
@@ -83,6 +98,8 @@ class Shares extends \Core\Model
     private function validate($id)
     {
 
+        $existingShares = $this->getByParkingID($id);
+
         // SHARE START DATE VALIDATION
         if ($this->share_start == '') {
 
@@ -93,10 +110,11 @@ class Shares extends \Core\Model
         if ($this->share_start != '') {
             
             // init new property, because view cannot render DateTime
-            $this->start_date = new DateTime($this->share_start);            
-            $this->start_date->setTime(0,0,0); // normalize time for calculation
-
+            $this->start_date = new DateTime($this->share_start);              
+            // normalize time for calculation
             // Check if date is valid, for e.g. 2019-02-31
+            $this->start_date->setTime(0,0,0); 
+        
             $date_errors = DateTime::getLastErrors();
 
             if ($date_errors['warning_count'] > 0) {
@@ -113,6 +131,19 @@ class Shares extends \Core\Model
 
                 $this->errors[] = 'earliest share start date is two days from today';
 
+            }
+            
+            // Check if startdate already exist in shareperiod of one share in db
+            if ($existingShares) {
+
+                $existingShareDates = $this->getDatesFromShares($existingShares);
+
+                $needle = $this->start_date->format(DateTime::ISO8601);
+                $haystack = $existingShareDates;
+              
+                if(in_array($needle, $haystack)) {
+                    $this->errors[] = 'share start date already exists';
+                }
             }
         } 
 
@@ -142,50 +173,49 @@ class Shares extends \Core\Model
 
                     $this->errors[] = 'earliest share end date is seven days from share start';
 
-                }           
+                }         
+
+                // Check if startdate already exist in shareperiod of one share in db
+                if ($existingShares) {
+
+                    $existingShareDates = $this->getDatesFromShares($existingShares);
+
+                    $needle = $this->end_date->format(DateTime::ISO8601);
+                    $haystack = $existingShareDates;
+                
+                    if(in_array($needle, $haystack)) {
+                        $this->errors[] = 'share end date already exists';
+                    }
+                }
             }
         } 
-
-        // CHECK FOR EXISTING SHAREPERIOD IN DATABASE
-        if(empty($this->errors)) {
-
-            $existingShares = $this->getByParkingID($id);
-
-            if ($existingShares) {
-                
-                $existingShareDates = $this->getDatesFromExistingShares($existingShares);
-
-                // TOOOODOOOO
-
-            }
-        }
     }
 
-    private function getDatesFromExistingShares($shares)
+    /**
+    * Get all Dates from given share object
+    * 
+    * @param Shares $shares share objects to get dates from
+    * 
+    * @return mixed $dates array with ISO8601 formatted dates
+    */
+    private function getDatesFromShares($shares)
     {
-        // var_dump($shares);
 
         $sharePeriods = [];
 
         foreach ($shares as $share) {
-            $sharePeriods[] = $this->createDatePeriod(
-                                     $share->share_start, $share->share_end);
+            $sharePeriods[] = $this->createDatePeriod($share->share_start, $share->share_end);
         }
 
-        // var_dump($sharePeriods);
+        $dates = [];
 
-        $sharePeriodDates = [];
-
-        foreach ($sharePeriods as $sharePeriod) {
-          
-            $sharePeriodDates[] = $this->getDatesFromDatePeriod($sharePeriod);
-            
+        foreach ($sharePeriods as $daterange) {
+            foreach ($daterange as $date) {
+                $dates[] = $date->format(DateTime::ISO8601);
+            }
         }
-        
-       var_dump($sharePeriodDates);
 
-       // TOODOOOO RETURN ONE ARRAY WITH ALL DATES INSIDE INSTEAD OF X ARRAYS...
-        
+        return $dates;   
     }
 
     /**
@@ -250,5 +280,7 @@ class Shares extends \Core\Model
 
         return $stmt->fetchAll();  // fetch() only gets first element
     }
+
+
 }
     

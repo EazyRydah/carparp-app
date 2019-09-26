@@ -109,10 +109,7 @@ class Parking extends Authenticated
 
         if ($share->add($parking->id)) {
 
-            // 
-
             Flash::addMessage('Parking shared successfully');
-
 
             // TODO redirect to share_success
             View::renderTemplate('Parking/share.html', [
