@@ -66,26 +66,13 @@ class Shares extends \Core\Model
 
             $existingShares = $this->getByParkingID($id);
 
-            $existingShareDates = $this->getDatesFromMultipleShares($existingShares);
+            if($existingShares) 
+            {
+                $shareIDs = $this->getIncludedShareIDs($existingShares);
 
-            $matchingShareDates = $this->getMatchingShareDatesFromExistingShares($existingShareDates);
-
-            if (!empty($matchingShareDates)) {
-
-                $matchingShareDatesSanitized = 
-                $this->sanitizeISO8601DateString($matchingShareDates);
-
-                // DAYUM!
-                /* 
-                Something like
-                get the ids from all existing shares, where matchingshareDates match start_date for e.g.
-                BREAK! MAKE MIND CLEAR - DO SOMETHING DIFFRENT!
-                
-                */
-                
+                $this->removeByIDs($shareIDs);
             }
 
-            
             $sql = 'INSERT INTO shares (share_start, share_end, parking_id) 
                     VALUES (:share_start, :share_end, :parking_id)';
             
@@ -96,7 +83,7 @@ class Shares extends \Core\Model
             $stmt->bindValue(':share_end', $this->share_end, PDO::PARAM_STR);
             $stmt->bindValue(':parking_id', $id, PDO::PARAM_INT);
     
-            return $stmt->execute(); // returns true on success
+            return $stmt->execute();  // returns true on success 
 
         } else {
 
@@ -105,6 +92,41 @@ class Shares extends \Core\Model
         }
     }
 
+    /**
+     * Extract all IDs from share object collection, which start_date is included by daterange of current share object
+     * 
+     * @param Shares $shares An share object collection
+     * 
+     * @return mixed $shareIDs An Array with all IDs which are included in daterange of current share object
+    */
+    private function getIncludedShareIDs($shares)
+    {
+        $includesdShareIDs = [];
+
+        $existingShares = $shares;
+
+        $currentShareDates = $this->getDatesFromSingleShare($this);
+        $haystack = $this->sanitizeISO8601DateString($currentShareDates);
+
+        foreach ($existingShares as $element) {
+            
+            $needle = $element->share_start;
+
+            if (in_array($needle, $haystack)) {
+                $includesdShareIDs[] = $element->id;
+            }
+        }
+
+        return $includesdShareIDs;
+    }
+
+    /**
+     * Cuts off time and timezone information from ISO8601 formatted date array
+     * 
+     * @param mixed $dates An array with string dates formatted in ISO8601
+     * 
+     * @return mixed $shareIDs An Array with all IDs which are included in daterange of current share object
+    */
     private function sanitizeISO8601DateString($dates) {
 
         $sanitizedDates = [];
@@ -114,15 +136,6 @@ class Shares extends \Core\Model
         }
 
         return $sanitizedDates;
-    }
-
-    private function getMatchingShareDatesFromExistingShares($dates) 
-    {
-        $currentShareDates = $this->getDatesFromSingleShare($this);
-
-        $matchingShareDates = array_intersect($currentShareDates, $dates);
-
-        return $matchingShareDates;
     }
 
     /**
@@ -337,6 +350,32 @@ class Shares extends \Core\Model
         $stmt->execute();
 
         return $stmt->fetchAll();  // fetch() only gets first element
+    }
+
+    private function removeByIDs($ids) {
+
+        echo "<br><br>-----SHARE IDS TO DELETE------<br><br>";
+        var_dump($ids);
+/* 
+        $shareIDs = $ids;
+
+        $sql = 'DELETE FROM shares WHERE id IN (';
+
+        $values = [];
+
+        foreach ($shareIDs as $id) {
+            $values[] = "{$id}, )";
+        }
+
+        $sql .= implode(" ) ", $values);
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+
+        var_dump($sql); 
+
+        return $stmt->execute(); */
+
     }
 
 }
