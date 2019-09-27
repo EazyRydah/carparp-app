@@ -63,10 +63,29 @@ class Shares extends \Core\Model
         $this->validate($id);
 
         if (empty($this->errors)) {
+
+            $existingShares = $this->getByParkingID($id);
+
+            $existingShareDates = $this->getDatesFromMultipleShares($existingShares);
+
+            $matchingShareDates = $this->getMatchingShareDatesFromExistingShares($existingShareDates);
+
+            if (!empty($matchingShareDates)) {
+
+                $matchingShareDatesSanitized = 
+                $this->sanitizeISO8601DateString($matchingShareDates);
+
+                // DAYUM!
+                /* 
+                Something like
+                get the ids from all existing shares, where matchingshareDates match start_date for e.g.
+                BREAK! MAKE MIND CLEAR - DO SOMETHING DIFFRENT!
+                
+                */
+                
+            }
+
             
-            var_dump($this);
-
-
             $sql = 'INSERT INTO shares (share_start, share_end, parking_id) 
                     VALUES (:share_start, :share_end, :parking_id)';
             
@@ -79,13 +98,31 @@ class Shares extends \Core\Model
     
             return $stmt->execute(); // returns true on success
 
-            // TOOODOOOOO UPDATE EXISTING SHARE! compare periods THING ABOUT THIS ONE!
-
         } else {
 
             return false;
 
         }
+    }
+
+    private function sanitizeISO8601DateString($dates) {
+
+        $sanitizedDates = [];
+
+        foreach ($dates as $date) {
+            $sanitizedDates[] = substr($date, 0, strpos($date, "T"));
+        }
+
+        return $sanitizedDates;
+    }
+
+    private function getMatchingShareDatesFromExistingShares($dates) 
+    {
+        $currentShareDates = $this->getDatesFromSingleShare($this);
+
+        $matchingShareDates = array_intersect($currentShareDates, $dates);
+
+        return $matchingShareDates;
     }
 
     /**
@@ -135,9 +172,9 @@ class Shares extends \Core\Model
             
             // Check if startdate already exist in shareperiod of one share in db
             if ($existingShares) {
-
-                $existingShareDates = $this->getDatesFromShares($existingShares);
-
+                // var_dump($existingShares);
+                $existingShareDates = $this->getDatesFromMultipleShares($existingShares);
+                
                 $needle = $this->start_date->format(DateTime::ISO8601);
                 $haystack = $existingShareDates;
               
@@ -178,7 +215,7 @@ class Shares extends \Core\Model
                 // Check if startdate already exist in shareperiod of one share in db
                 if ($existingShares) {
 
-                    $existingShareDates = $this->getDatesFromShares($existingShares);
+                    $existingShareDates = $this->getDatesFromMultipleShares($existingShares);
 
                     $needle = $this->end_date->format(DateTime::ISO8601);
                     $haystack = $existingShareDates;
@@ -192,13 +229,34 @@ class Shares extends \Core\Model
     }
 
     /**
-    * Get all Dates from given share object
+    * Get all Dates from single share object
+    * 
+    * @param Shares $shares share object to get dates from
+    * 
+    * @return mixed $dates array with ISO8601 formatted dates
+    */
+    private function getDatesFromSingleShare($share)
+    {
+
+        $sharePeriod = $this->createDatePeriod($share->share_start, $share->share_end);
+
+        $dates = [];
+
+        foreach ($sharePeriod as $date) {
+            $dates[] = $date->format(DateTime::ISO8601);
+        }
+
+        return $dates;
+    }
+
+    /**
+    * Get all Dates from multiple share objects
     * 
     * @param Shares $shares share objects to get dates from
     * 
     * @return mixed $dates array with ISO8601 formatted dates
     */
-    private function getDatesFromShares($shares)
+    private function getDatesFromMultipleShares($shares)
     {
 
         $sharePeriods = [];
@@ -280,7 +338,6 @@ class Shares extends \Core\Model
 
         return $stmt->fetchAll();  // fetch() only gets first element
     }
-
 
 }
     
