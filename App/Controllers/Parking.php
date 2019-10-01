@@ -62,7 +62,6 @@ class Parking extends Authenticated
             View::renderTemplate('Parking/new.html', [
                 'parking' => $parking
             ]);
-
         }
     }
 
@@ -88,14 +87,23 @@ class Parking extends Authenticated
     */
     public function shareAction() 
     {
+      
         $parking = Parkings::findByID($this->route_params['id']);
 
-        View::renderTemplate('Parking/share.html', [
-            'parking' => $parking
-        ]);
+        if ($this->user->id == $parking->user_id) {
+
+            View::renderTemplate('Parking/share.html', [
+                'parking' => $parking
+            ]);
+
+        } else {
+
+            $this->redirect('/');
+
+        }
     }
 
-     /**
+    /**
      * Create share on seletected parking with parking id commiing from the 
      * query string. 
      *
@@ -105,30 +113,125 @@ class Parking extends Authenticated
     {
         $parking = Parkings::findByID($this->route_params['id']);
 
-        $share = new Shares($_POST);
+        if ($this->user->id == $parking->user_id) {
 
-        if ($share->add($parking->id)) {
+            $share = new Shares($_POST);
 
-            Flash::addMessage('Parking shared successfully');
+            if ($share->add($parking->id)) {
 
-            // TODO redirect to share_success
-            View::renderTemplate('Parking/share.html', [
+                Flash::addMessage('Parking shared successfully');
+
+                View::renderTemplate('Parking/share_success.html', [
+                    'parking' => $parking,
+                    'share' => $share
+                ]); 
+
+            } else {
+                
+                Flash::addMessage('invalid date input, please try again', Flash::WARNING);
+
+                View::renderTemplate('Parking/share.html', [
+                    'parking' => $parking,
+                    'share' => $share
+                ]); 
+
+            }
+
+        } else {
+
+            $this->redirect('/');
+
+        }
+
+    }
+
+    /**
+     * Load shares from selected parking 
+     *
+     * @return void
+    */
+    public function viewSharesAction() {
+
+        $parking = Parkings::findByID($this->route_params['id']);
+
+        if ($this->user->id == $parking->user_id) {
+
+            $shares = Shares::getByParkingID($parking->id);
+
+            View::renderTemplate('Parking/share_history.html', [
+                'parking' => $parking,
+                'shares' => $shares
+            ]); 
+
+        } else {
+
+            $this->redirect('/');
+
+        }
+    }
+
+    /**
+     * Load cancel shares view
+     *
+     * @return void
+    */
+    public function cancelShareAction() {
+
+        $parking = Parkings::findByID($this->route_params['parkingid']);
+    
+        if ($this->user->id == $parking->user_id) {
+
+            $share = $shareToDelete = Shares::findByID($this->route_params['shareid']);
+
+            View::renderTemplate('Parking/share_cancel.html', [
                 'parking' => $parking,
                 'share' => $share
             ]); 
 
         } else {
-            
-            Flash::addMessage('invalid date input, please try again', Flash::WARNING);
 
-            View::renderTemplate('Parking/share.html', [
-                'parking' => $parking,
-                'share' => $share
-            ]); 
+            $this->redirect('/');
 
         }
 
-        // var_dump($share);
     }
 
+    /**
+     * Remove selected share from db
+     *
+     * @return void
+    */
+    public function removeShareAction() {
+
+        $parking = Parkings::findByID($this->route_params['parkingid']);
+
+        if ($this->user->id == $parking->user_id) {
+
+            // TOOODOO CHECK THAT SHARE SHOULD BE NOW + 2 DAY!
+
+            $share = Shares::findByID($this->route_params['shareid']);
+
+            if($share->remove()) {
+
+                $shares = Shares::getByParkingID($parking->id);
+
+                Flash::addMessage('Share successfully deleted!');
+
+                View::renderTemplate('Parking/share_history.html', [
+                    'parking' => $parking,
+                    'shares' => $shares
+                ]); 
+            
+            } else {
+                
+                Flash::addMessage('Something went wrong, please try again', Flash::WARNING);
+
+            }
+
+        } else {
+
+            $this->redirect('/');
+
+        }
+    }
 }

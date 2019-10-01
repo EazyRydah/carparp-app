@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-
 use PDO;
 use DateTime;
 use DateInterval;
@@ -57,8 +56,8 @@ class Shares extends \Core\Model
      * @param string $id The parking ID
      * 
      * @return void
-      */
-      public function add($id) {
+    */
+    public function add($id) {
 
         $this->validate($id);
 
@@ -217,11 +216,11 @@ class Shares extends \Core\Model
             // Checks that only work if both dates are set
             if ($this->share_start != '') {
             
-                $min_end_date = $this->start_date->modify('+7 days');
+                $min_end_date = $this->start_date->modify('+6 days');
 
                 if ($this->end_date < $min_end_date) {
 
-                    $this->errors[] = 'earliest share end date is seven days from share start';
+                    $this->errors[] = 'earliest share end date is six days from share start';
 
                 }         
 
@@ -335,8 +334,8 @@ class Shares extends \Core\Model
     * @param string $id The parking ID
     * 
     * @return mixed Share object collection if found, false otherwise
-     */
-    private function getByParkingID($id) {
+    */
+    public static function getByParkingID($id) {
 
         $sql = 'SELECT * FROM shares WHERE parking_id = :id';
 
@@ -352,31 +351,80 @@ class Shares extends \Core\Model
         return $stmt->fetchAll();  // fetch() only gets first element
     }
 
-    private function removeByIDs($ids) {
+    /**
+    * Find single share by ID
+    * 
+    * @param string $id The share ID
+    * 
+    * @return mixed Share object if found, false otherwise
+    */
+    public static function findByID($id) {
 
-        echo "<br><br>-----SHARE IDS TO DELETE------<br><br>";
-        var_dump($ids);
-/* 
-        $shareIDs = $ids;
-
-        $sql = 'DELETE FROM shares WHERE id IN (';
-
-        $values = [];
-
-        foreach ($shareIDs as $id) {
-            $values[] = "{$id}, )";
-        }
-
-        $sql .= implode(" ) ", $values);
+        $sql = 'SELECT * FROM shares WHERE id = :id';
 
         $db = static::getDB();
         $stmt = $db->prepare($sql);
 
-        var_dump($sql); 
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
 
-        return $stmt->execute(); */
+        $stmt->setFetchMode(PDO::FETCH_CLASS, get_called_class());
 
+        $stmt->execute();
+
+        return $stmt->fetch(); 
     }
 
+    /**
+    * Remove shares by IDs
+    * 
+    * @param string $ids The share IDs
+    * 
+    * @return boolean true if removing successfull, false otherwise
+     */
+    private function removeByIDs($ids) {
+
+        if (!empty($ids)) {
+
+            $sql = 'DELETE FROM shares WHERE id IN (';
+
+            $values = [];
+
+            foreach ($ids as $id) {
+                $values[] = "{$id},";
+            }
+
+            $sql .= implode(" ", $values);
+
+            // Removelast character from statement if it is ","
+            $sql = rtrim($sql, ",");
+
+            // Add closing bracket to complete sql statement
+            $sql .= ")";
+
+            $db = static::getDB();
+            $stmt = $db->prepare($sql);
+
+            return $stmt->execute(); 
+        }
+    }
+
+    /**
+    * Remove single share by ID
+    * 
+    * @return boolean true if removing successfull, false otherwise
+    *
+    */
+    public function remove() {
+
+        $sql = 'DELETE FROM shares WHERE id = :id';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
+
+        return $stmt->execute(); 
+
+    }
 }
     

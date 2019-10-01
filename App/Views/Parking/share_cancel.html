@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Parking{% endblock %}
+
+{% block body %}
+
+    <h1>Parking</h1>
+
+    <p>Are you sure you want to cancel the following share?</p>
+
+    <dl class="row mt-3">
+        <dt class="col-sm-3">Bezeichnung: </dt>
+        <dd class="col-sm-9">{{ parking.carpark_name }} </dd>
+   <!--      <dt class="col-sm-2">End-date: </dt>
+        <dd class="col-sm-4">{{ share.share_end|date("d.m.Y") }} </dd> -->
+        <dt class="col-sm-3">Standort: </dt>
+        <dd class="col-sm-9">{{ parking.street }} {{ parking.street_number }}, {{ parking.zip_code }} {{ parking.city }} </dd>
+    </dl>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+            <th scope="col">Beginn</th>
+            <th scope="col">Ende</th>
+            <th scope="col">Anzahl Tage</th>
+            <th scope="col">Gutschrift</th>
+            </tr>
+        </thead>
+        <tbody>  
+            <tr>
+            <td>{{ share.share_start|date("d.m.Y") }}</td>
+            <td>{{ share.share_end|date("d.m.Y") }}</td>
+            <td>difference in days</td>
+            <td>20 €</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <form action="/parking/{{ parking.id }}/remove-share/{{ share.id }}" method="post">
+        <button type="submit" class="btn btn-warning">Stornieren</button>
+        <a href="/parking/{{ parking.id }}/view-shares" class="btn btn-default">Cancel</a>
+    </form>
+
+
+{% endblock %}

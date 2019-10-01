@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Parking{% endblock %}
+
+{% block body %}
+
+    <h1>Parking Share History</h1>
+    <br>
+    <dl class="row mt-3">
+        <dt class="col-sm-2">Adresse: </dt>
+        <dd class="col-sm-4">{{ parking.carpark_name }}  </dd>
+        <dt class="col-sm-2">Status: </dt>
+        <dd class="col-sm-4">{{ parking.is_shared }} </dd>
+        <dt class="col-sm-2">Straße: </dt>
+        <dd class="col-sm-4">{{ parking.street }} {{ parking.street_number }}, {{ parking.zip_code }} {{ parking.city }} </dd>
+    </dl>
+
+    <br>
+    {% if shares %}
+
+        <table class="table table-striped">
+
+            <thead>
+              <tr>
+                <th scope="col">Beginn</th>
+                <th scope="col">Ende</th>
+                <th scope="col">Anzahl Tage</th>
+                <th scope="col">Gutschrift</th>
+                <th scope="col">Funktionen</th>
+              </tr>
+            </thead>
+            <tbody>
+
+            {% for share in shares %}
+
+              <tr>
+                <td>{{ share.share_start|date("d.m.Y") }}</td>
+                <td>{{ share.share_end|date("d.m.Y") }}</td>
+                <td>difference in days</td>
+                <td>20 €</td>
+                {% if date(share.share_start) > date('+2days') %}
+                  <td><a href="/parking/{{parking.id}}/cancel-share/{{share.id}}">Cancel </a></td>
+                {% else %}
+                    <td class="text-muted">active</td>
+                {% endif %}
+              </tr>
+         
+            {% endfor %}
+        
+            </tbody>
+        </table>
+           
+
+    {% else %}
+
+        <p>Bislang keine Freigaben vorhanden.</p>
+
+    {% endif %}
+
+{% endblock %}
