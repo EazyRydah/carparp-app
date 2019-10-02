@@ -25,7 +25,7 @@
                 <th scope="col">Beginn</th>
                 <th scope="col">Ende</th>
                 <th scope="col">Anzahl Tage</th>
-                <th scope="col">Gutschrift</th>
+                <th scope="col">Gutschrift in €</th>
                 <th scope="col">Funktionen</th>
               </tr>
             </thead>
@@ -36,8 +36,8 @@
               <tr>
                 <td>{{ share.share_start|date("d.m.Y") }}</td>
                 <td>{{ share.share_end|date("d.m.Y") }}</td>
-                <td>difference in days</td>
-                <td>20 €</td>
+                <td>{{ share.amount_days }}</td> 
+                <td>{{ share.credit_item }}</td>
                 {% if date(share.share_start) > date('+2days') %}
                   <td><a href="/parking/{{parking.id}}/cancel-share/{{share.id}}">Cancel </a></td>
                 {% else %}
@@ -56,5 +56,5 @@
         <p>Bislang keine Freigaben vorhanden.</p>
 
     {% endif %}
-
+    <a href="/" class="btn btn-default">Back</a>
 {% endblock %}

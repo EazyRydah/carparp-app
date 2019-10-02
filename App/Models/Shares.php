@@ -7,6 +7,7 @@ use DateTime;
 use DateInterval;
 use DatePeriod;
 use \App\Auth;
+use \App\Config;
 
 /**
  * Parking model
@@ -65,6 +66,10 @@ class Shares extends \Core\Model
 
             $existingShares = $this->getByParkingID($id);
 
+            $this->amount_days = $this->calculateAmountDays();
+
+            $this->credit_item = $this->amount_days * Config::CREDIT_ITEM_PER_DAY_RATE;
+
             if($existingShares) 
             {
                 $shareIDs = $this->getIncludedShareIDs($existingShares);
@@ -72,14 +77,23 @@ class Shares extends \Core\Model
                 $this->removeByIDs($shareIDs);
             }
 
-            $sql = 'INSERT INTO shares (share_start, share_end, parking_id) 
-                    VALUES (:share_start, :share_end, :parking_id)';
+            $sql = 'INSERT INTO shares (share_start, 
+                                        share_end,
+                                        amount_days, 
+                                        credit_item,                        parking_id) 
+                                VALUES (:share_start,
+                                        :share_end,
+                                        :amount_days,
+                                        :credit_item,
+                                        :parking_id)';
             
             $db = static::getDB();
             $stmt = $db->prepare($sql);
     
             $stmt->bindValue(':share_start', $this->share_start, PDO::PARAM_STR);
             $stmt->bindValue(':share_end', $this->share_end, PDO::PARAM_STR);
+            $stmt->bindValue(':amount_days', $this->amount_days, PDO::PARAM_INT);
+            $stmt->bindValue(':credit_item', $this->credit_item, PDO::PARAM_STR);
             $stmt->bindValue(':parking_id', $id, PDO::PARAM_INT);
     
             return $stmt->execute();  // returns true on success 
@@ -90,6 +104,25 @@ class Shares extends \Core\Model
 
         }
     }
+
+    /**
+     * Calculate the share length in days from the difference of share start and end
+     * 
+     * @return integer $days The amount of days between share start and end
+    */
+    private function calculateAmountDays() {
+
+        $start_date = new DateTime($this->share_start);
+        $end_date = new DateTime($this->share_end);
+        $end_date->modify("+1day");
+
+        $difference = $start_date->diff($end_date);
+
+        $days = $difference->days;
+
+        return $days;
+    }
+
 
     /**
      * Extract all IDs from share object collection, which start_date is included by daterange of current share object

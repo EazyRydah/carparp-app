@@ -92,7 +92,7 @@ class Parking extends Authenticated
 
         if ($this->user->id == $parking->user_id) {
 
-            View::renderTemplate('Parking/share.html', [
+            View::renderTemplate('Parking/share_new.html', [
                 'parking' => $parking
             ]);
 
@@ -130,7 +130,7 @@ class Parking extends Authenticated
                 
                 Flash::addMessage('invalid date input, please try again', Flash::WARNING);
 
-                View::renderTemplate('Parking/share.html', [
+                View::renderTemplate('Parking/share_new.html', [
                     'parking' => $parking,
                     'share' => $share
                 ]); 
@@ -158,7 +158,7 @@ class Parking extends Authenticated
 
             $shares = Shares::getByParkingID($parking->id);
 
-            View::renderTemplate('Parking/share_history.html', [
+            View::renderTemplate('Parking/shares.html', [
                 'parking' => $parking,
                 'shares' => $shares
             ]); 
@@ -217,7 +217,7 @@ class Parking extends Authenticated
 
                 Flash::addMessage('Share successfully deleted!');
 
-                View::renderTemplate('Parking/share_history.html', [
+                View::renderTemplate('Parking/shares.html', [
                     'parking' => $parking,
                     'shares' => $shares
                 ]); 
