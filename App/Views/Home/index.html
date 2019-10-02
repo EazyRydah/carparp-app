@@ -4,12 +4,11 @@
 
 {% block body %}
 
-    <h1>Welcome</h1>
+    <h1>Willkommen</h1>
     
     {% if current_user %}
-        Hello {{ current_user.name }}.
-        <br>
-        <a href="/parking/new">Add Parking</a>
+
+        <a href="/parking/new" class="btn btn-secondary btn-sm">Parkplatz hinzufügen</a>
         
         {% for parking in user_parkings %}
 
@@ -24,7 +23,7 @@
                 <dd class="col-sm-4">{{ parking.street }} {{ parking.street_number }}, {{ parking.zip_code }} {{ parking.city }} </dd>
                 <dt class="col-sm-2">Funktionen: </dt>
                 <dd class="col-sm-2">
-                    <a href="parking/{{ parking.id }}/share">Freigeben</a>
+                    <a href="parking/{{ parking.id }}/share" >Freigeben</a>
                     </dd>
                 <dd class="col-sm-2">
                     <a href="/parking/{{ parking.id }}/view-shares">Verlauf</a>

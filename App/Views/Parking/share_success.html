@@ -6,11 +6,12 @@
 
     <h1>Congratulations!</h1>
 
-    <p>Parking {{ parking.carpark_name }} shared successfully for {{share.amount_days }} from {{share.share_start|date("d.m.Y")}} to {{share.share_end|date("d.m.Y")}} with {{share.credit_item}} as credit item.</p>
+    <p>Parking {{ parking.carpark_name }} shared successfully for {{share.amount_days }} from {{share.share_start|date("d.m.Y")}} to {{share.share_end|date("d.m.Y")}} with {{share.credit_item}} € as credit item.</p>
 
     <p>
         <a href="/">Back to All Parkings</a>
     </p>
+    
     <p>
         <a href="/parking/{{ parking.id }}/share">Add another Share</a>
     </p>

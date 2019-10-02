@@ -7,11 +7,11 @@
     <h1>Parking Share History</h1>
     <br>
     <dl class="row mt-3">
-        <dt class="col-sm-2">Adresse: </dt>
+        <dt class="col-sm-2">Bezeichnung: </dt>
         <dd class="col-sm-4">{{ parking.carpark_name }}  </dd>
         <dt class="col-sm-2">Status: </dt>
         <dd class="col-sm-4">{{ parking.is_shared }} </dd>
-        <dt class="col-sm-2">Straße: </dt>
+        <dt class="col-sm-2">Standort: </dt>
         <dd class="col-sm-4">{{ parking.street }} {{ parking.street_number }}, {{ parking.zip_code }} {{ parking.city }} </dd>
     </dl>
 
@@ -31,7 +31,7 @@
             </thead>
             <tbody>
 
-            {% for share in shares %}
+            {% for share in shares|reverse %}
 
               <tr>
                 <td>{{ share.share_start|date("d.m.Y") }}</td>
@@ -39,9 +39,9 @@
                 <td>{{ share.amount_days }}</td> 
                 <td>{{ share.credit_item }}</td>
                 {% if date(share.share_start) > date('+2days') %}
-                  <td><a href="/parking/{{parking.id}}/cancel-share/{{share.id}}">Cancel </a></td>
+                  <td><a href="/parking/{{parking.id}}/cancel-share/{{share.id}}" class="btn btn-warning btn-sm">Stornieren</a></td>
                 {% else %}
-                    <td class="text-muted">active</td>
+                    <td class="text-muted">Aktiv</td>
                 {% endif %}
               </tr>
          
@@ -50,11 +50,10 @@
             </tbody>
         </table>
            
-
     {% else %}
 
         <p>Bislang keine Freigaben vorhanden.</p>
 
     {% endif %}
-    <a href="/" class="btn btn-default">Back</a>
+    <a href="/" class="btn btn-secondary btn-sm">Zurück</a>
 {% endblock %}
