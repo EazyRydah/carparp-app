@@ -31,7 +31,7 @@
             </thead>
             <tbody>
 
-            {% for share in shares|reverse %}
+            {% for share in shares|sort %}
 
               <tr>
                 <td>{{ share.share_start|date("d.m.Y") }}</td>

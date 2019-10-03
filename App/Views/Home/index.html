@@ -8,7 +8,7 @@
     
     {% if current_user %}
 
-        <a href="/parking/new" class="btn btn-secondary btn-sm">Parkplatz hinzufügen</a>
+        <a href="/parking/new" class="btn btn-outline-success btn-sm">Parkplatz hinzufügen</a>
         
         {% for parking in user_parkings %}
 
@@ -35,7 +35,7 @@
         {% endfor %}
         
     {% else %}
-        <a href="/signup/new">Sign up</a> or <a href="/login">log in</a>.
+        <a href="/signup/new" >Registrieren</a> oder <a href="/login" >Einloggen</a>.
     {% endif %}
 
 {% endblock %}
